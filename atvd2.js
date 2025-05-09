@@ -1,99 +1,60 @@
-class Peso {
-  constructor(valores) {
-    this.valores = valores;
-  }
+class Provas {
+    #pesos;
+    #gabarito;
+    #respostas;
+
+    constructor(gabarito, pesos) {
+        this.#gabarito = gabarito;
+        this.#pesos = pesos;
+        this.#respostas = [];
+    }
+
+    adicionar(resolucao) {
+        this.#respostas.push(resolucao);
+    }
+
+    #corrigir(resolucao) {
+        let nota = 0;
+        for (let i = 0; i < this.#gabarito.length; i++) {
+            if (resolucao[i] === this.#gabarito[i]) {
+                nota += this.#pesos[i];
+            }
+        }
+        return nota;
+    }
+
+    media() {
+        const notas = this.#respostas.map(this.#corrigir.bind(this));
+        const soma = notas.reduce((acc, nota) => acc + nota, 0);
+        return notas.length ? soma / notas.length : 0;
+    }
+
+    minimo(qtd = 1) {
+        const notas = this.#respostas.map(this.#corrigir.bind(this));
+        return notas.sort((a, b) => a - b).slice(0, qtd);
+    }
+
+    maximo(qtd = 1) {
+        const notas = this.#respostas.map(this.#corrigir.bind(this));
+        return notas.sort((a, b) => b - a).slice(0, qtd);
+    }
+
+    menoresQue(limite = 0) {
+        return this.#respostas.map(this.#corrigir.bind(this)).filter(nota => nota < limite);
+    }
+
+    maioresQue(limite = 0) {
+        return this.#respostas.map(this.#corrigir.bind(this)).filter(nota => nota > limite);
+    }
 }
 
-class Resposta {
-  constructor(respostas) {
-    this.respostas = respostas;
-  }
-}
+const gabarito = ['a', 'b', 'a', 'c', 'd'];
+const pesos = [2, 2, 2, 2, 2];
 
-class Prova {
-  constructor(respostaCorreta, peso) {
-    this.peso = peso;
-    this.respostaCorreta = respostaCorreta;
-    this.exames = [];
-  }
+const sistema = new Provas(gabarito, pesos);
 
-  adicionar(exame) {
-    
-    exame.nota = Object.keys(exame.respostas).reduce((total, questao) => {
-      return total + (
-        exame.respostas[questao] === this.respostaCorreta.respostas[questao] 
-        ? this.peso.valores[questao] 
-        : 0
-      );
-    }, 0);
+const respostasAluno1 = ['a', 'b', 'b', 'b', 'b'];
+sistema.adicionar(respostasAluno1);
 
-    this.exames.push(exame);
-  }
-
-  media() {
-    if (this.exames.length === 0) return 0;
-
-    const soma = this.exames.reduce((total, exame) => total + exame.nota, 0);
-    return soma / this.exames.length;
-  }
-
-  minimo(quantidade = 1) {
-    const notas = this.exames.map(exame => exame.nota);
-    notas.sort((a, b) => a - b);
-    return notas.slice(0, quantidade);
-  }
-
-  maximo(quantidade = 1) {
-    const notas = this.exames.map(exame => exame.nota);
-    notas.sort((a, b) => a - b);
-    return notas.slice(-quantidade);
-  }
-
-  menoresQue(limite) {
-    const notas = this.exames.map(exame => exame.nota);
-    return notas.filter(nota => nota < limite).sort((a, b) => a - b);
-  }
-
-  maioresQue(limite) {
-    const notas = this.exames.map(exame => exame.nota);
-    return notas.filter(nota => nota > limite).sort((a, b) => a - b);
-  }
-}
-
-function executarExemplo() {
- 
-  const pesos = new Peso({
-    q1: 2,
-    q2: 2,
-    q3: 2,
-    q4: 2,
-    q5: 2
-  });
-
-  const gabarito = new Resposta({
-    q1: 'a',
-    q2: 'b',
-    q3: 'a',
-    q4: 'c',
-    q5: 'd'
-  });
-
-  const prova = new Prova(gabarito, pesos);
-
-  const respostasAluno = {
-    q1: 'a',
-    q2: 'b',
-    q3: 'b',
-    q4: 'b',
-    q5: 'b'
-  };
-
-  prova.adicionar({ respostas: respostasAluno });
-
-  console.log(prova.media()); 
-  console.log(prova.minimo());
-  console.log(prova.maximo());
-  console.log(prova.menoresQue(5));
-  console.log(prova.maioresQue(5));
-}
-
+const nota = sistema.maioresQue(0)[0];
+console.log("Nota do aluno:", nota);
