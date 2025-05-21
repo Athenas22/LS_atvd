@@ -1,0 +1,15 @@
+.flag-card{
+    min-height: 6.5rem;
+}
+
+.flag-card p {
+  font-size: .8rem;
+  color: #777;
+}
+
+img {
+      width: 100%;
+      height: auto;
+      max-height: 60px;
+      object-fit: contain;
+    }
